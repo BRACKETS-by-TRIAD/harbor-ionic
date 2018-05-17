@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+
+UNAMEOUT="$(uname -s)"
+case "${UNAMEOUT}" in
+    Linux*)     MACHINE=linux;;
+    Darwin*)    MACHINE=mac;;
+    *)          MACHINE="UNKNOWN"
+esac
+
+if [ "$MACHINE" == "UNKNOWN" ]; then
+    echo "Unsupported system type"
+    echo "System must be a Macintosh or Linux"
+    echo ""
+    echo "System detection determined via uname command"
+    echo "If the following is empty, could not find uname command: $(which uname)"
+    echo "Your reported uname is: $(uname -s)"
+fi
+
+# making harbor command available
+chmod +x ./harbor-ionic
+
+export DOCKER_APP_PORT=${DOCKER_APP_PORT:-8100}
+export DOCKER_LIVE_RELOAD_PORT=${DOCKER_LIVE_RELOAD_PORT:-35729}
+
+# Is the environment running
+PSRESULT="$(docker-compose ps -q)"
+if [ ! -z "$PSRESULT" ]; then
+    EXEC="yes"
+else
+    EXEC="no"
+fi
+
+# Create base docker-compose command to run
+COMPOSE="docker-compose -f docker-compose.yml"
+
+# If we pass any arguments...
+if [ $# -gt 0 ]; then
+
+    # Source .env, which can over-ride env vars
+    if [ -f .env ]; then
+        source .env
+    fi
+
+    # Rebuild the containers
+    if [ "$1" == "rebuild" ]; then
+        if [ "$EXEC" == "yes" ]; then
+            $COMPOSE down -v
+        fi
+        $COMPOSE build
+
+    # If "npm" is used, run npm from our node container
+    elif [ "$1" == "npm" ]; then
+        shift 1
+        $COMPOSE run --rm \
+            node \
+            npm "$@"
+
+    # If "ionic" is used, run ionic from our node container
+    elif [ "$1" == "ionic" ]; then
+        shift 1
+        $COMPOSE run --service-ports --rm \
+            node \
+            ionic serve --all --port 8100 --livereload-port 35729
+
+    # If "yarn" is used, run yarn from our node container
+    elif [ "$1" == "yarn" ]; then
+        shift 1
+        $COMPOSE run --rm \
+            node \
+            yarn "$@"
+
+    # If "gulp" is used, run gulp from our node container
+    elif [ "$1" == "gulp" ]; then
+        shift 1
+        $COMPOSE run --rm \
+            node \
+            ./node_modules/.bin/gulp "$@"
+
+    # Else, pass args to docker-compose
+    else
+        $COMPOSE "$@"
+    fi
+else
+    # Use the docker-compose ps command if nothing else passed through
+    $COMPOSE ps
+fi
