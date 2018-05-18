@@ -1,16 +1,20 @@
-# Adding Harbor Ionic #
+# Harbor Ionic #
+
+Harbor ionic provides docker configuration for your ionic project. It consist of node container.
+
+## Adding harbor ionic ##
 
 In order to initialize harbor ionic to the existing project or when starting a new project (in empty folder) use
 `harbor add ionic` 
 
-# Starting a ionic harbor (docker) #
+## Starting a harbor ionic serve (in docker) ##
 
 To start the docker environment with ionic use:
 `harbor ionic`
 
 This will start the docker container and start also ionic serve for development.
 
-# Daily usage #
+## Daily usage ##
 
 In this section you can find all commands supported by harbor ionic.
 
@@ -33,11 +37,3 @@ Run yarn command on node container and pass all additional arguments to yarn.
 `harbor gulp`
 
 Run gulp command on node container from node modules and pass all additional arguments to gulp.
-
-
-
-
-
-
-
-
