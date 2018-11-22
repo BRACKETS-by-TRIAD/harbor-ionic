@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# check system if supported
 UNAMEOUT="$(uname -s)"
 case "${UNAMEOUT}" in
     Linux*)     MACHINE=linux;;
@@ -19,10 +20,11 @@ fi
 # making harbor command available
 chmod +x ./harbor-ionic
 
+# prepare default env variables
 export DOCKER_APP_PORT=${DOCKER_APP_PORT:-8100}
 export DOCKER_LIVE_RELOAD_PORT=${DOCKER_LIVE_RELOAD_PORT:-35729}
 
-# Is the environment running
+# is the environment running
 PSRESULT="$(docker-compose ps -q)"
 if [ ! -z "$PSRESULT" ]; then
     EXEC="yes"
@@ -30,7 +32,7 @@ else
     EXEC="no"
 fi
 
-# Create base docker-compose command to run
+# create base docker-compose command to run
 COMPOSE="docker-compose -f docker-compose.yml"
 
 # If we pass any arguments...
@@ -41,45 +43,99 @@ if [ $# -gt 0 ]; then
         source .env
     fi
 
-    # Rebuild the containers
-    if [ "$1" == "rebuild" ]; then
-        if [ "$EXEC" == "yes" ]; then
-            $COMPOSE down -v
-        fi
-        $COMPOSE build
+    case "$1" in
 
-    # If "npm" is used, run npm from our node container
-    elif [ "$1" == "npm" ]; then
-        shift 1
-        $COMPOSE run --rm \
-            node \
-            npm "$@"
+        # Rebuild the containers
+        rebuild)
+            if [ "$EXEC" == "yes" ]; then
+                shift 1
+                DOWN_PARAMS=""
+                for i in "$@"
+                do
+                    case $i in
+                        -i=*|--images)
+                            DOWN_PARAMS="--rmi all"
+                        ;;
+                        *)
+                        ;;
+                    esac
+                done
+                $COMPOSE down -v $DOWN_PARAMS
+            fi
+            $COMPOSE build
+            ;;
 
-    # If "ionic" is used, run ionic from our node container
-    elif [ "$1" == "ionic" ]; then
-        shift 1
-        $COMPOSE run --service-ports --rm \
-            node \
-            ionic serve --all --port 8100 --livereload-port 35729
+        # If "npm" is used, run npm from our node container
+        npm)
+            shift 1
+            $COMPOSE run --rm \
+                node \
+                npm "$@"
+            ;;
 
-    # If "yarn" is used, run yarn from our node container
-    elif [ "$1" == "yarn" ]; then
-        shift 1
-        $COMPOSE run --rm \
-            node \
-            yarn "$@"
+        # If "ionic" is used, run ionic from our node container
+        ionic)
+            shift 1
+            $COMPOSE run --service-ports --rm \
+                node \
+                ionic "$@"
+            ;;
 
-    # If "gulp" is used, run gulp from our node container
-    elif [ "$1" == "gulp" ]; then
-        shift 1
-        $COMPOSE run --rm \
-            node \
-            ./node_modules/.bin/gulp "$@"
+        # If "ionic-serve" is used, run ionic serve from our node container
+        ionic-serve)
+            shift 1
+            $COMPOSE run --service-ports --rm \
+                node \
+                ionic serve --all --port 8100 --livereload-port 35729
+            ;;
 
-    # Else, pass args to docker-compose
-    else
-        $COMPOSE "$@"
-    fi
+        # If "yarn" is used, run yarn from our node container
+        yarn)
+            shift 1
+            $COMPOSE run --rm \
+                node \
+                yarn "$@"
+            ;;
+
+        # If "gulp" is used, run gulp from our node container
+        gulp)
+            shift 1
+            $COMPOSE run --rm \
+                node \
+                ./node_modules/.bin/gulp "$@"
+            ;;
+
+        # Installing new ionic project
+        new)
+            case "$2" in
+
+                # Installing new ionic project
+                ionic)
+                    echo "This command will install new ionic application to current folder"
+
+                    # ionic start
+                    $COMPOSE run --service-ports --rm \
+                        node \
+                        ionic start application blank
+
+                    # move application content to this folder
+                    mv application/* application/.[!.]* .
+                    rm -rf ./application
+                    ;;
+
+                # If not provided, show what to use
+                *)
+                    echo $"Usage: $0 $1 {ionic}"
+                    exit 1
+                    ;;
+
+            esac
+
+        # Else, pass args to docker-compose
+        *)
+            $COMPOSE "$@"
+            ;;
+    esac
 else
     # Use the docker-compose ps command if nothing else passed through
     $COMPOSE ps
