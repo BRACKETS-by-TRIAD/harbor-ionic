@@ -130,6 +130,7 @@ if [ $# -gt 0 ]; then
                     ;;
 
             esac
+            ;;
 
         # Else, pass args to docker-compose
         *)
