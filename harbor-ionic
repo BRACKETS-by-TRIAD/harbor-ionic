@@ -116,7 +116,7 @@ if [ $# -gt 0 ]; then
                     # ionic start
                     $COMPOSE run --service-ports --rm \
                         node \
-                        ionic start application blank
+                        ionic start application blank --no-link
 
                     # move application content to this folder
                     mv application/* application/.[!.]* .
