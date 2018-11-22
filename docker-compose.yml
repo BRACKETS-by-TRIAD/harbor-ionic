@@ -4,7 +4,7 @@ services:
     build:
       context: ./docker/node
       dockerfile: Dockerfile
-    image: brackets/ionic
+    image: brackets/ionic:8
     ports:
      - '${DOCKER_APP_PORT}:8100'
      - '${DOCKER_LIVE_RELOAD_PORT}:35729'
