@@ -1,15 +1,11 @@
-# Harbor Ionic #
+# Harbor #
 
-Harbor ionic provides docker configuration for your ionic project. It consist of node container.
-
-## Adding harbor ionic ##
-
-In order to initialize harbor ionic to the existing project or when starting a new project (in empty folder) use
-`harbor add ionic` 
+This Harbor provides docker configuration for your ionic project. It consist of node container.
 
 ## Starting a harbor ionic serve (in docker) ##
 
 To start the docker environment with ionic use:
+
 `harbor ionic`
 
 This will start the docker container and start also ionic serve for development.
@@ -18,22 +14,12 @@ This will start the docker container and start also ionic serve for development.
 
 In this section you can find all commands supported by harbor ionic.
 
-`harbor rebuild`
+`harbor rebuild` will stop and destroy all containers then starts again all containers, build them if changes has been made.
 
-Stops and destroy all containers also with volumes, delete testing database path, rebuild docker images and then starts again all containers.
+`harbor ionic` will run ionic serve command on node container.
 
-`harbor ionic`
+`harbor npm` will run npm command on node container and pass all additional arguments to npm.
 
-Run ionic serve command on node container.
+`harbor yarn` will run yarn command on node container and pass all additional arguments to yarn.
 
-`harbor npm`
-
-Run npm command on node container and pass all additional arguments to npm.
-
-`harbor yarn`
-
-Run yarn command on node container and pass all additional arguments to yarn.
-
-`harbor gulp`
-
-Run gulp command on node container from node modules and pass all additional arguments to gulp.
+`harbor gulp` will run gulp command on node container from node modules and pass all additional arguments to gulp.
