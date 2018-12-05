@@ -6,7 +6,7 @@ This Harbor provides docker configuration for your ionic project. It consist of 
 
 To start the docker environment with ionic use:
 
-`harbor ionic`
+`harbor ionic-serve`
 
 This will start the docker container and start also ionic serve for development.
 
