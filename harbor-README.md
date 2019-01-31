@@ -1,6 +1,6 @@
 # Harbor #
 
-This Harbor provides docker configuration for your ionic project. It consist of node container.
+This harbor provides docker configuration for your ionic project. It consist of node container.
 
 ## Starting a harbor ionic serve (in docker) ##
 
