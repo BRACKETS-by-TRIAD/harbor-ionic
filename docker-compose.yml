@@ -6,8 +6,8 @@ services:
       dockerfile: Dockerfile
     image: brackets/ionic:${DOCKER_NODE_VERSION:-8}
     ports:
-     - '${DOCKER_APP_PORT}:8100'
-     - '${DOCKER_LIVE_RELOAD_PORT}:35729'
+     - '${DOCKER_APP_PORT:-8100}:8100'
+     - '${DOCKER_LIVE_RELOAD_PORT:-35729}:35729'
     volumes:
      - .:/var/www/html
     networks:
