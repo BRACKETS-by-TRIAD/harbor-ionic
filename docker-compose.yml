@@ -2,9 +2,9 @@ version: '3'
 services:
   node:
     build:
-      context: ./docker/node
+      context: ./docker/node/${DOCKER_NODE_VERSION:-8}
       dockerfile: Dockerfile
-    image: brackets/ionic:8
+    image: brackets/ionic:${DOCKER_NODE_VERSION:-8}
     ports:
      - '${DOCKER_APP_PORT}:8100'
      - '${DOCKER_LIVE_RELOAD_PORT}:35729'
